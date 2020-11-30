@@ -1,5 +1,7 @@
 #[macro_use]
 extern crate log;
+#[macro_use]
+extern crate lazy_static;
 
 use font_kit::loaders::default::Font;
 use pathfinder_geometry::vector::Vector2F;

@@ -19,11 +19,44 @@ use crate::tables::{
     CANONICAL_DECOMP_KEY, CANONICAL_DECOMP_VAL, MIRROR_KEY, MIRROR_VAL, SCRIPT_KEY, SCRIPT_VAL,
 };
 
-fn make_unicode_funcs() -> *mut hb_unicode_funcs_t {
-    unsafe {
-        let funcs_ptr = hb_unicode_funcs_create(null_mut());
-        funcs_ptr
+struct UnicodeFuncs {
+    ptr: *mut hb_unicode_funcs_t,
+}
+
+unsafe impl Sync for UnicodeFuncs {}
+
+impl UnicodeFuncs {
+    pub fn new() -> Self {
+        let ptr = unsafe {
+            hb_unicode_funcs_create(null_mut())
+        };
+        Self {
+            ptr
+        }
     }
+    pub fn as_ptr(&self) -> *mut hb_unicode_funcs_t {
+        // unsafe {
+        //     let target = self as *const UnicodeFuncs as *mut UnicodeFuncs;
+        //     (*target).ptr = hb_unicode_funcs_create(null_mut())
+        // }
+        self.ptr
+    }
+}
+
+lazy_static! {
+    static ref GLOBAL_UNICODE_FUNCS: UnicodeFuncs = UnicodeFuncs::new();
+}
+
+
+// fn make_unicode_funcs() -> *mut hb_unicode_funcs_t {
+//     unsafe {
+//         let funcs_ptr = hb_unicode_funcs_create(null_mut());
+//         funcs_ptr
+//     }
+// }
+
+fn make_unicode_funcs() -> *mut hb_unicode_funcs_t {
+    GLOBAL_UNICODE_FUNCS.as_ptr()
 }
 
 pub fn install_unicode_funcs(buffer: &mut Buffer) {
