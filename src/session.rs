@@ -217,7 +217,7 @@ pub(crate) fn get_script_run(text: &str) -> (hb_script_t, usize) {
         (HB_SCRIPT_UNKNOWN, 0)
     }
 }
-
+#[allow(dead_code)]
 fn debug_script_runs(text: &str) {
     let mut text_substr = text;
     while !text_substr.is_empty() {
